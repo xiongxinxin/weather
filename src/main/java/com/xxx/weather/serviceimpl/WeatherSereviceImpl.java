@@ -1,6 +1,12 @@
 package com.xxx.weather.serviceimpl;
 
+import java.util.concurrent.TimeUnit;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -17,10 +23,15 @@ import com.xxx.weather.vo.WeatherResponse;
  */
 @Service
 public class WeatherSereviceImpl implements WeatherService {
+
+	private final static Logger log = LoggerFactory.getLogger(WeatherSereviceImpl.class);
 	private final static String URI = "http://wthrcdn.etouch.cn/weather_mini";
 
 	@Autowired
 	private RestTemplate restTemplate;
+
+	@Autowired
+	private StringRedisTemplate stringRedisTemplate;
 
 	/**
 	 * 通过城市ID获取该城市天气信息
@@ -48,7 +59,7 @@ public class WeatherSereviceImpl implements WeatherService {
 	@Override
 	public WeatherResponse getWeatherByCityName(String cityName) {
 		String url = URI + "?city=" + cityName;
-		
+
 		return this.getWeather(url);
 	}
 
@@ -61,13 +72,26 @@ public class WeatherSereviceImpl implements WeatherService {
 	 * @date 2019-5-3
 	 */
 	private WeatherResponse getWeather(String url) {
-		ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
 
-		int statusCode = responseEntity.getStatusCodeValue();
 		String body = "";
-		if (statusCode == 200) {
-			body = responseEntity.getBody();
+		ValueOperations<String, String> opsForValue = this.stringRedisTemplate.opsForValue();
+
+		// 缓存中有数据就从缓存中取数据
+		if (stringRedisTemplate.hasKey(url)) {
+			body = opsForValue.get(url);
+			log.info("从redis中获取数据，key为{},值为\n{}", url, body);
+		} else {
+			ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
+			int statusCode = responseEntity.getStatusCodeValue();
+
+			if (statusCode == 200) {
+				body = responseEntity.getBody();
+			}
+
+			opsForValue.set(url, body, 30 * 60L, TimeUnit.SECONDS);
+			log.info("向redis中插入数据，key为{},值为\n{}", url, body);
 		}
+
 		WeatherResponse parseObject = null;
 		try {
 			parseObject = JSON.parseObject(body, WeatherResponse.class);
