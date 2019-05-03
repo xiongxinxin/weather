@@ -1,0 +1,48 @@
+buildscript {//buildscript中的脚本优先执行
+    //ext    用于定义动态属性
+	ext {
+		springBootVersion = '2.0.3.RELEASE'
+	}
+    //使用maven的中央仓库,也可以指定其他库
+	repositories {
+		maven { url "http://maven.aliyun.com/nexus/content/groups/public/" }
+		mavenCentral()
+	}
+    //依赖关系
+	dependencies {
+        //classpath说明执行脚本时,ClassLoader可以使用这些依赖项
+		classpath("org.springframework.boot:spring-boot-gradle-plugin:${springBootVersion}")
+	}
+}
+//使用插件
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'org.springframework.boot'
+apply plugin: 'io.spring.dependency-management'
+ 
+group = 'com.xxx.hello'
+//指定生成的编译文件的版本,默认是Jar包
+version = '0.0.1-SNAPSHOT'
+//jdk版本
+sourceCompatibility = 1.8
+ 
+repositories {
+	mavenCentral()
+}
+ 
+ 
+dependencies {
+    //依赖用于编译阶段
+	compile('org.springframework.boot:spring-boot-starter-web')
+    //依赖用于测试阶段
+	testCompile('org.springframework.boot:spring-boot-starter-test')
+	//代码热更新
+	compile('org.springframework.boot:spring-boot-devtools')
+	//fastjson
+	compile('com.alibaba:fastjson:1.2.57')
+	//httpClient
+	compile('org.apache.httpcomponents:httpclient:4.5.8')
+	//redis
+	compile('org.springframework.boot:spring-boot-starter-data-redis:2.0.3.RELEASE')
+
+}
