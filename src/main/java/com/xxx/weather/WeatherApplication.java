@@ -1,6 +1,4 @@
-/**
- * 
- */
+
 package com.xxx.weather;
 
 import org.springframework.boot.SpringApplication;
