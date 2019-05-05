@@ -6,6 +6,9 @@ import java.io.StringReader;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.Unmarshaller;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Xml解析成实体对象
  *
@@ -13,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
  * @date 2019-5-4
  */
 public class XmlBuilder {
+	private static final Logger log = LoggerFactory.getLogger(XmlBuilder.class);
 
 	/**
 	 * 将xml文件转换成一个POJO对象
@@ -25,6 +29,7 @@ public class XmlBuilder {
 	 * @date 2019-5-4
 	 */
 	public static Object xmlStrToObject(String xmlStr, Class<?> clazz) throws Exception {
+		log.info("\nxmlStr:{},\nclazz:{}", xmlStr, clazz);
 		Object xmlObject = null;
 		Reader reader = new StringReader(xmlStr);
 

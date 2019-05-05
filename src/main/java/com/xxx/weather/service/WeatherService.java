@@ -29,4 +29,14 @@ public interface WeatherService {
 	 */
 	WeatherResponse getWeatherByCityName(String cityName);
 
+	/**
+	 * 通过城市ID向redis中存入数据
+	 * 
+	 * @param cityId 城市ID
+	 * @return 天气状况
+	 * @author xiongxinxin
+	 * @date 2019-5-5
+	 */
+	WeatherResponse setWeatherByCityId(String cityId);
+
 }

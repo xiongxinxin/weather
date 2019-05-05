@@ -88,7 +88,7 @@ public class WeatherSereviceImpl implements WeatherService {
 				body = responseEntity.getBody();
 			}
 
-			opsForValue.set(url, body, 30 * 60L, TimeUnit.SECONDS);
+			opsForValue.set(url, body, 35 * 60L, TimeUnit.SECONDS); // 设置有效期为35分钟而不是30分钟，防止30分钟的时候用户没有数据可以用
 			log.info("向redis中插入数据，key为{},值为\n{}", url, body);
 		}
 
@@ -100,6 +100,53 @@ public class WeatherSereviceImpl implements WeatherService {
 		}
 
 		return parseObject;
+	}
+
+	/**
+	 * 向redis中加入数据
+	 * 
+	 * @param url redis中key
+	 * @return
+	 * @author xiong.xinxin
+	 * @date 2019-5-5
+	 */
+	private WeatherResponse setWeatherToRedis(String url) {
+
+		String body = "";
+		ValueOperations<String, String> opsForValue = this.stringRedisTemplate.opsForValue();
+
+		ResponseEntity<String> responseEntity = restTemplate.getForEntity(url, String.class);
+		int statusCode = responseEntity.getStatusCodeValue();
+
+		if (statusCode == 200) {
+			body = responseEntity.getBody();
+		}
+
+		opsForValue.set(url, body, 30 * 60L, TimeUnit.SECONDS);
+		log.info("向redis中插入数据，key为{},值为\n{}", url, body);
+
+		WeatherResponse parseObject = null;
+		try {
+			parseObject = JSON.parseObject(body, WeatherResponse.class);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
+		return parseObject;
+	}
+
+	/**
+	 * 通过城市ID缓存数据
+	 * 
+	 * @param cityId 城市ID
+	 * @return 天气状况
+	 * @author xiong.xinxin
+	 * @date 2019-5-5
+	 */
+	public WeatherResponse setWeatherByCityId(String cityId) {
+		String url = URI + "?citykey=" + cityId;
+
+		return this.setWeatherToRedis(url);
 	}
 
 }

@@ -42,7 +42,8 @@ public class DataSyncJobConf {
 	 */
 	@Bean
 	public Trigger weatherDataSyncTrigger(JobDetail weatherDataSyncJobDetail) {
-		SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(60)
+		// 每30分钟调用跑一次定时任务
+		SimpleScheduleBuilder scheduleBuilder = SimpleScheduleBuilder.simpleSchedule().withIntervalInSeconds(60 * 30)
 				.repeatForever();
 		return TriggerBuilder.newTrigger().forJob(weatherDataSyncJobDetail).withIdentity("weatherDataSyncTrigger")
 				.withSchedule(scheduleBuilder).build();
