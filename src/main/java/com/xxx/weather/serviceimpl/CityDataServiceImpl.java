@@ -4,10 +4,13 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
+import com.alibaba.fastjson.JSON;
 import com.xxx.weather.service.CityDataService;
 import com.xxx.weather.util.XmlBuilder;
 import com.xxx.weather.vo.City;
@@ -21,7 +24,7 @@ import com.xxx.weather.vo.CityList;
  */
 @Service
 public class CityDataServiceImpl implements CityDataService {
-
+	private static final Logger log = LoggerFactory.getLogger(CityDataServiceImpl.class);
 	/**
 	 * 获取城市天气列表
 	 * 
@@ -44,7 +47,7 @@ public class CityDataServiceImpl implements CityDataService {
 		br.close();
 
 		CityList cityList = (CityList) XmlBuilder.xmlStrToObject(sb.toString(), CityList.class);
-
+		log.info("cityList:\n{}",JSON.toJSONString(cityList));
 		return cityList.getCityList();
 	}
 

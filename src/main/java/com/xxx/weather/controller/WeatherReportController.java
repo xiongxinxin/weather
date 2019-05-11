@@ -41,6 +41,6 @@ public class WeatherReportController {
 		model.addAttribute("cityList", this.cityDataService.listCity());
 		model.addAttribute("report", this.weatherReportService.getDataByCityId(cityId));
 
-		return new ModelAndView("weather/report", "reportModal", model);
+		return new ModelAndView("weather/report", "reportModel", model);
 	}
 }

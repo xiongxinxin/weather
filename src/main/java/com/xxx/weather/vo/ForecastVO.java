@@ -46,6 +46,14 @@ public class ForecastVO {
 		this.low = low;
 	}
 
+	public String getFengxiang() {
+		return fengxiang;
+	}
+
+	public void setFengxiang(String fengxiang) {
+		this.fengxiang = fengxiang;
+	}
+
 	public String getType() {
 		return type;
 	}
